@@ -3,8 +3,7 @@ import tkinter as tk
 from tkinter import filedialog
 import keyboard as kb
 
-r = vr.Recorder()
-p = vr.Player()
+vrobj = vr.VRecorder()
 fname = 'user_actions.json'
 hk1 =hk2 = hk3 = hk4 = hk5 = None
 
@@ -24,47 +23,34 @@ button_bg = "#4CAF50"
 button_fg = "white"
 button_font = ("Arial", 8, "bold")
 
-def record():
-    r.start()
-
-def stop():
-    r.stop()
 
 def save():
     file_path = filedialog.asksaveasfilename(defaultextension=".json",filetypes=[("Script files", "*.json")])
     if file_path:
         global fname
         fname = file_path
-        r.save(file_path)
+        vrobj.recorderSave(file_path)
 
 def choose_file():
     file_path = filedialog.askopenfilename(filetypes=[("Script files", ".json"), ("All files", ".*")])
     if file_path:
-        p.load(file_path)
-        p.play(3)
-
-def pause_resume():
-    p.toggle()
+        vrobj.playerPlay(file_path)
 
 def exit_app():
-    p.exit()
+    vrobj.playerExit()
     root.destroy()
 
 def activateHK():
-    def ply():
-        p.load()
-        p.play(2)
     try:
         global hk1, hk2, hk3, hk4, hk5
-        hk1 = kb.add_hotkey('ctrl+1', record)
-        hk2 = kb.add_hotkey('ctrl+2', stop)
-        hk3 = kb.add_hotkey('ctrl+3', r.save)
-        hk4 = kb.add_hotkey('ctrl+4', ply)
-        hk5 = kb.add_hotkey('ctrl+5', pause_resume)
+        hk1 = kb.add_hotkey('ctrl+1', vrobj.recorderStart)
+        hk2 = kb.add_hotkey('ctrl+2', vrobj.recorderStop)
+        hk3 = kb.add_hotkey('ctrl+3', vrobj.recorderSave)
+        hk4 = kb.add_hotkey('ctrl+4', vrobj.playerPlay)
+        hk5 = kb.add_hotkey('ctrl+5', vrobj.playerToggle)
         print("Hotkeys are activated")
     except:
         print("eactivated")
-        pass
 
 def deactivateHK():
     try:
@@ -76,13 +62,12 @@ def deactivateHK():
         print("hotkeys are deactivated")
     except:
         print("deactivated")
-        pass
 
-record_button = tk.Button(root, text="Record", command=record, width=button_width, bg=button_bg, fg=button_fg, font=button_font)
-stop_button = tk.Button(root, text="Stop", command=stop, width=button_width, bg=button_bg, fg=button_fg, font=button_font)
+record_button = tk.Button(root, text="Record", command=vrobj.recorderStart, width=button_width, bg=button_bg, fg=button_fg, font=button_font)
+stop_button = tk.Button(root, text="Stop", command=vrobj.recorderStop, width=button_width, bg=button_bg, fg=button_fg, font=button_font)
 save_button = tk.Button(root, text="Save", command=save, width=button_width, bg=button_bg, fg=button_fg, font=button_font)
 file_input_button = tk.Button(root, text="Choose and Play", command=choose_file, width=button_width, bg=button_bg, fg=button_fg, font=button_font)
-pause_resume_button = tk.Button(root, text="Pause/Resume", command=pause_resume, width=button_width, bg=button_bg, fg=button_fg, font=button_font)
+pause_resume_button = tk.Button(root, text="Pause/Resume", command=vrobj.playerToggle, width=button_width, bg=button_bg, fg=button_fg, font=button_font)
 exit_button = tk.Button(root, text="Exit", command=exit_app, width=button_width, bg=button_bg, fg=button_fg, font=button_font)
 activateHK_button = tk.Button(root, text="Activate Hotkeys", command=activateHK, width=button_width, bg=button_bg, fg=button_fg, font=button_font)
 deactivateHK_button = tk.Button(root, text="Deactivate Hotkeys", command=deactivateHK, width=button_width, bg=button_bg, fg=button_fg, font=button_font)
@@ -97,7 +82,7 @@ activateHK_button.grid(row=2, column=0, padx=10, pady=10)
 deactivateHK_button.grid(row=2, column=1, padx=10, pady=10)
 
 
-kb.add_hotkey('esc', p.exit)
+kb.add_hotkey('esc', vrobj.playerExit)
 
 # Start the main loop
 root.mainloop()

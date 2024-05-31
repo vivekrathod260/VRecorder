@@ -84,6 +84,7 @@ class Player:
         self.idolTime = 0
         self.mouse = MouseController()
         self.keyboard = KeyboardController()
+        self.playerLive = False
         self.status = 1 # play
 
     def load(self, filename='user_actions.json'):
@@ -95,8 +96,12 @@ class Player:
 
     def worker(self):
         start_time = datetime.now()
+        self.playerLive = True
         for event in self.events:
             if(self.status == -1):
+                self.playerLive = False
+                self.idolTime = 0
+                self.status = 1
                 return
             if(self.status == 0):
                 time.sleep(1)
@@ -129,13 +134,15 @@ class Player:
                     key = getattr(Key, key.split('.')[1])
                 self.keyboard.release(key)
         print("Script Ended")
+        self.playerLive = False
 
 
     def play(self, sleep=0):
-        time.sleep(sleep)
-        print("Playing script => "+str(self.filename))
-        runThread = threading.Thread(target=self.worker, args=())
-        runThread.start()
+        if self.playerLive == False: 
+            time.sleep(sleep)
+            print("Playing script => "+str(self.filename))
+            runThread = threading.Thread(target=self.worker, args=())
+            runThread.start()
 
     def pause(self):
         if self.status == 0:
