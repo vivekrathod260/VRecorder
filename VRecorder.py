@@ -170,6 +170,12 @@ class VRecorder:
     def recorderStart(self):
         self.recorder.start()
 
+    def recorderStop(self):
+        self.recorder.stop()
+
+    def recorderSave(self, filename='./user_actions.json'):
+        self.recorder.save(filename)
+
     def recorderStopAndSave(self, filename='./user_actions.json'):
         self.recorder.stopAndSave(filename)
 
